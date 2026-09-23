@@ -73,8 +73,7 @@ export function DatePicker({ value, onChange, placeholder = "انتخاب تار
           <button
             type="button"
             onClick={toggle}
-            aria-invalid={invalid || undefined}
-            className={cn(inputBase, "flex h-10 items-center gap-2 text-start", !label && "text-muted-foreground/70")}
+            className={cn(inputBase, "flex h-10 items-center gap-2 text-start", !label && "text-muted-foreground/70", invalid && "border-danger")}
           >
             <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" />
             <span className="flex-1 truncate">{label || placeholder}</span>

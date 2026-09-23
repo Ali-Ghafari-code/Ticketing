@@ -72,8 +72,8 @@ export function DonutChart({ data, height = 240 }: { data: { name: string; count
   const total = data.reduce((s, d) => s + d.count, 0);
   if (!total) return <NoData />;
   return (
-    <div className="flex flex-col items-center gap-4 sm:flex-row">
-      <div className="relative h-[200px] w-[200px] shrink-0" style={{ height: Math.min(height, 220) }}>
+    <div className="flex flex-wrap items-center justify-center gap-4">
+      <div className="relative h-[180px] w-[180px] shrink-0" style={{ height: Math.min(height, 180) }}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie data={data} dataKey="count" nameKey="name" innerRadius="62%" outerRadius="92%" paddingAngle={2} stroke="none">
@@ -87,7 +87,7 @@ export function DonutChart({ data, height = 240 }: { data: { name: string; count
           <span className="text-[0.7rem] text-muted-foreground">تیکت</span>
         </div>
       </div>
-      <ul className="w-full space-y-1.5 text-xs">
+      <ul className="min-w-[11rem] flex-1 space-y-1.5 text-xs">
         {data.map((d, i) => (
           <li key={d.name} className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: d.color || PALETTE[i % PALETTE.length] }} />

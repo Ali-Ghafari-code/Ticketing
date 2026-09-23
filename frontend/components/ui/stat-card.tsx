@@ -29,7 +29,7 @@ export function StatCard({ label, value, icon, hint, tone = "default", href, loa
         <p className="text-xs font-medium text-muted-foreground">{label}</p>
         {icon && <span className={cn("flex h-8 w-8 items-center justify-center rounded-lg", toneClass[tone])}>{icon}</span>}
       </div>
-      <div className="mt-2 text-2xl font-bold tracking-tight">
+      <div className={cn("mt-2 font-bold tracking-tight", typeof value === "string" && value.length > 8 ? "text-base leading-7" : "text-2xl")}>
         {loading ? <span className="inline-block h-7 w-14 animate-pulse rounded bg-muted" /> : typeof value === "number" ? formatNumber(value) : (value ?? "—")}
       </div>
       {hint && <div className="mt-1 text-xs text-muted-foreground">{hint}</div>}

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import Float, case, cast, func, literal_column, select
+from sqlalchemy import case, func, literal_column, select
 from sqlalchemy.orm import Session
 
 from app.database.base import utcnow
@@ -112,8 +112,8 @@ def summary(ctx: TicketContext, f: ReportFilters | None = None, *, scoped_to_use
             func.sum(case((Ticket.created_at >= today_start, 1), else_=0)),
             func.sum(case((Ticket.created_at >= week_start, 1), else_=0)),
             func.sum(case((Ticket.created_at >= month_start, 1), else_=0)),
-            func.avg(case((Ticket.first_responded_at.is_not(None), cast(first_resp, Float)))),
-            func.avg(case((Ticket.resolved_at.is_not(None), cast(resolution, Float)))),
+            func.avg(case((Ticket.first_responded_at.is_not(None), first_resp * 1.0))),
+            func.avg(case((Ticket.resolved_at.is_not(None), resolution * 1.0))),
             func.sum(case((Ticket.sla_status == SlaStatus.MET, 1), else_=0)),
             func.sum(case((Ticket.sla_status == SlaStatus.BREACHED, 1), else_=0)),
             func.sum(case((Ticket.reopened_count > 0, 1), else_=0)),
@@ -166,8 +166,8 @@ def _group(ctx: TicketContext, f: ReportFilters | None, key_col, label_col, colo
         func.count(Ticket.id).label("count"),
         func.sum(case((TicketStatus.state.in_([StatusState.OPEN, StatusState.PENDING]), 1), else_=0)).label("open"),
         func.sum(case((TicketStatus.state.in_([StatusState.RESOLVED, StatusState.CLOSED]), 1), else_=0)).label("done"),
-        func.avg(case((Ticket.first_responded_at.is_not(None), cast(first_resp, Float)))).label("avg_first"),
-        func.avg(case((Ticket.resolved_at.is_not(None), cast(resolution, Float)))).label("avg_res"),
+        func.avg(case((Ticket.first_responded_at.is_not(None), first_resp * 1.0))).label("avg_first"),
+        func.avg(case((Ticket.resolved_at.is_not(None), resolution * 1.0))).label("avg_res"),
         func.sum(case((Ticket.sla_status == SlaStatus.BREACHED, 1), else_=0)).label("breached"),
         func.sum(case((Ticket.sla_status == SlaStatus.MET, 1), else_=0)).label("met"),
     ).select_from(Ticket).join(TicketStatus, TicketStatus.id == Ticket.status_id)
@@ -358,8 +358,8 @@ def response_trend(ctx: TicketContext, days: int = 30, scoped_to_user: bool = Fa
     first_resp = minutes_diff(db, Ticket.created_at, Ticket.first_responded_at)
     resolution = minutes_diff(db, Ticket.created_at, Ticket.resolved_at)
     rows = db.execute(
-        select(day, func.avg(case((Ticket.first_responded_at.is_not(None), cast(first_resp, Float)))),
-               func.avg(case((Ticket.resolved_at.is_not(None), cast(resolution, Float)))))
+        select(day, func.avg(case((Ticket.first_responded_at.is_not(None), first_resp * 1.0))),
+               func.avg(case((Ticket.resolved_at.is_not(None), resolution * 1.0))))
         .select_from(Ticket)
         .where(*_base(ctx, ReportFilters(date_from=start, date_to=tz_today), scoped_to_user=scoped_to_user))
         .group_by(day)).all()

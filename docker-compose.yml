@@ -1,0 +1,68 @@
+# Full stack for local evaluation / single-server deployment:
+#   MySQL 8, phpMyAdmin, FastAPI backend and Next.js frontend.
+# Usage:  cp backend/.env.example backend/.env   (set JWT secrets!)
+#         docker compose up -d --build
+#         docker compose exec backend python -m app.seed      # optional demo data
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ticketing
+      MYSQL_USER: ticketing
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-ticketing}
+      TZ: UTC
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "8080:80"
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file: ./backend/.env
+    environment:
+      DATABASE_URL: mysql+pymysql://ticketing:${MYSQL_PASSWORD:-ticketing}@mysql:3306/ticketing?charset=utf8mb4
+      UPLOAD_DIR: /app/storage/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/storage/uploads
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:8000/api}
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+volumes:
+  mysql_data:
+  uploads:

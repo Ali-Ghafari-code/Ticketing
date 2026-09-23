@@ -67,6 +67,11 @@
 }
 
 @layer components {
+  /* Implicit grid tracks default to "auto" and grow with content; keep them shrinkable like flex items with min-w-0. */
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .ltr {
     direction: ltr;
     unicode-bidi: plaintext;

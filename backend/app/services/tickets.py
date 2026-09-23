@@ -116,11 +116,13 @@ def load_context(db: Session, tenant: Tenant, meta: RequestMeta | None = None) -
 def get_visible_ticket(ctx: TicketContext, ticket_id: str, *, for_update: bool = False) -> Ticket:
     stmt = TicketRepository(ctx.db, ctx.company_id).scoped().where(
         or_(Ticket.id == ticket_id, Ticket.code == ticket_id), visibility_filter(ctx.tenant, ctx.company))
-    if for_update:
-        stmt = stmt.with_for_update(of=Ticket)
     ticket = ctx.db.scalar(stmt)
     if ticket is None:
         raise NotFound("تیکت یافت نشد یا به آن دسترسی ندارید.")
+    if for_update:
+        # Lock only the ticket row (portable across MySQL/MariaDB), then reload its current state.
+        ctx.db.execute(select(Ticket.id).where(Ticket.id == ticket.id).with_for_update())
+        ctx.db.refresh(ticket)
     return ticket
 
 
@@ -312,7 +314,9 @@ def _validate_agent(ctx: TicketContext, agent_id: str) -> User:
 
 
 def _next_number(db: Session, company_id: str) -> tuple[int, str]:
-    company = db.scalar(select(Company).where(Company.id == company_id).with_for_update())
+    db.execute(select(Company.id).where(Company.id == company_id).with_for_update())
+    company = db.get(Company, company_id)
+    db.refresh(company, ["ticket_seq"])
     company.ticket_seq += 1
     number = company.ticket_seq
     return number, f"{company.ticket_prefix}-{number}"

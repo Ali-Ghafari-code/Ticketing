@@ -1,0 +1,131 @@
+@import "vazirmatn/Vazirmatn-font-face.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 248 249 251;
+    --foreground: 15 23 42;
+    --card: 255 255 255;
+    --muted: 241 243 246;
+    --muted-foreground: 100 112 132;
+    --border: 229 231 236;
+    --input: 216 220 228;
+    --primary: 79 70 229;
+    --primary-foreground: 255 255 255;
+    --accent: 238 240 255;
+    --success: 16 150 110;
+    --warning: 217 119 6;
+    --danger: 220 38 38;
+    --info: 14 140 200;
+    color-scheme: light;
+  }
+
+  .dark {
+    --background: 11 13 18;
+    --foreground: 229 231 235;
+    --card: 20 22 29;
+    --muted: 30 33 42;
+    --muted-foreground: 148 156 172;
+    --border: 40 44 55;
+    --input: 55 60 74;
+    --primary-foreground: 255 255 255;
+    --accent: 35 34 64;
+    --success: 52 199 147;
+    --warning: 245 166 35;
+    --danger: 248 90 90;
+    --info: 56 189 248;
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01";
+  }
+
+  ::selection {
+    @apply bg-primary/20;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary/50 ring-offset-1 ring-offset-background;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+}
+
+@layer components {
+  .ltr {
+    direction: ltr;
+    unicode-bidi: plaintext;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  /* Rich text rendering for messages, KB articles and the editor */
+  .prose-content {
+    @apply text-[0.925rem] leading-7 break-words;
+  }
+  .prose-content p {
+    @apply my-1.5;
+  }
+  .prose-content h1 {
+    @apply mb-3 mt-5 text-xl font-bold;
+  }
+  .prose-content h2 {
+    @apply mb-2 mt-4 text-lg font-bold;
+  }
+  .prose-content h3 {
+    @apply mb-2 mt-3 text-base font-semibold;
+  }
+  .prose-content ul {
+    @apply my-2 list-disc pr-6;
+  }
+  .prose-content ol {
+    @apply my-2 list-decimal pr-6;
+  }
+  .prose-content blockquote {
+    @apply my-3 border-r-4 border-primary/40 bg-muted/60 px-4 py-2 text-muted-foreground;
+  }
+  .prose-content a {
+    @apply text-primary underline underline-offset-2;
+  }
+  .prose-content code {
+    @apply rounded bg-muted px-1.5 py-0.5 text-[0.85em] ltr;
+  }
+  .prose-content pre {
+    @apply my-3 overflow-x-auto rounded-lg bg-muted p-3 ltr;
+  }
+  .prose-content img {
+    @apply my-2 max-w-full rounded-lg;
+  }
+  .prose-content hr {
+    @apply my-4;
+  }
+  .prose-content span[data-type="mention"],
+  .prose-content .mention {
+    @apply rounded bg-primary/10 px-1 font-medium text-primary;
+  }
+
+  .ProseMirror {
+    @apply min-h-[120px] outline-none;
+  }
+  .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    @apply pointer-events-none float-right h-0 text-muted-foreground;
+  }
+}

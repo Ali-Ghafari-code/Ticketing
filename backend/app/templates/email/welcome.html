@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
+<p style="margin:0 0 8px;">حساب کاربری شما در سامانه پشتیبانی {{ company }} ایجاد شد.</p>
+{% if temp_password %}<p style="margin:0;">رمز عبور موقت: <strong style="direction:ltr;display:inline-block;">{{ temp_password }}</strong> — لطفاً پس از ورود آن را تغییر دهید.</p>{% endif %}
+{% endblock %}

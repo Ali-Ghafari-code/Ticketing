@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ subject }}</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f5f7;font-family:Vazirmatn,Tahoma,Arial,sans-serif;direction:rtl;text-align:right;color:#1f2937;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5f7;padding:32px 12px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
+        <tr>
+          <td style="padding:20px 28px;border-bottom:3px solid {{ primary_color or '#4F46E5' }};">
+            <strong style="font-size:17px;color:#111827;">{{ company or 'پشتیبانی' }}</strong>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:28px;font-size:14px;line-height:2;">
+            {% if recipient_name %}<p style="margin:0 0 12px;">{{ recipient_name }} عزیز،</p>{% endif %}
+            {% if custom_intro %}<p style="margin:0 0 12px;">{{ custom_intro }}</p>{% endif %}
+            {% block content %}{% endblock %}
+            {% if link %}
+            <p style="margin:24px 0 0;">
+              <a href="{{ link }}" style="display:inline-block;background:{{ primary_color or '#4F46E5' }};color:#ffffff;text-decoration:none;padding:10px 22px;border-radius:8px;font-weight:bold;">{{ link_label or 'مشاهده تیکت' }}</a>
+            </p>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 28px;background:#f9fafb;color:#6b7280;font-size:12px;border-top:1px solid #e5e7eb;">
+            این ایمیل به صورت خودکار ارسال شده است؛ لطفاً مستقیماً به آن پاسخ ندهید.
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>
